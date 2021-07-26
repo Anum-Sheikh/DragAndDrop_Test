@@ -1,0 +1,130 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <button mat-icon-button>
+      <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
+    </button>
+    <h1>Drag and Drop Elements</h1>
+    <span class="menu-spacer"></span>
+  </mat-toolbar-row>
+
+  <mat-toolbar-row>
+      <a *ngFor = "let process of processList" mat-list-item class="p-box" (click)="getProcessById(process)"> {{process.Name}}</a>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-sidenav-container>
+  <mat-sidenav mode="side" #sidenav opened>
+    <mat-nav-list>
+
+      <a mat-list-item class="example-box" draggable [dragData]="item.input" > Input Field </a>
+      <a mat-list-item class="example-box" draggable [dragData]="item.textArea" > Text Area </a>
+      <a mat-list-item class="example-box" draggable [dragData]="item.button" > Primary Button</a>
+      <a mat-list-item class="example-box" draggable [dragData]="item.editor" > Text Editor</a>
+    </mat-nav-list>
+
+    <button style= "margin-top: 20px;" mat-raised-button color="primary" (click)="createNewProcess()">Create New Process</button>
+    <div>
+      <button  style = "margin-top: 20px; position: relative;" mat-raised-button color="Warn" (click)="transformELement()">Transform</button>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content droppable (onDrop)="onItemDrop($event)" style="height: 88vh;" class="content mat-elevation-z8">
+    
+    <div *ngFor = "let element of processElementList">
+     
+      <mat-form-field  #input id = "{{element._id}}" #inputElement  appearance="outline" *ngIf = "element.Type == itemType.input" class="elements selecto-area"> 
+        <mat-label>Input</mat-label>
+        <input matInput  [(ngModel)]="element.Value" (click) = "selectElement(element)" >
+      </mat-form-field>
+
+      <mat-form-field #text id = "{{element._id}}" appearance="outline" *ngIf = "element.Type == itemType.textArea" class="elements selecto-area">
+        <mat-label>Textarea</mat-label>
+        <textarea matInput [(ngModel)]="element.Value" (click) = "selectElement(element)"></textarea>
+      </mat-form-field>
+
+      <button #button id = "{{element._id}}"  mat-raised-button color="primary"  (click) = "selectElement(element)" *ngIf = "element.Type == itemType.button" class="elements selecto-area">{{element.Value}}</button>
+
+    
+        <!-- <button class="elements selecto-area" #move mat-raised-button color="basic">Basic</button> -->
+     
+      <!-- <div class="elements selecto-area">
+        <button mat-raised-button color="primary">Primary</button>
+      </div> -->
+
+      <div #editor id = "{{element._id}}"  class="elements selecto-area" *ngIf = "element.Type == itemType.editor">
+        <angular-editor [(ngModel)]="element.Value" (click) = "selectElement(element)"  [placeholder]="'Enter text here...'" [config]="editorConfig" [(ngModel)]="htmlContent"></angular-editor>
+      </div>
+     <ngx-selecto
+    #selecto
+    dragContainer=".elements"
+    [selectableTargets]='[".selecto-area"]'
+    [hitRate]='0'
+    [selectByClick]='true'
+    [selectFromInside]='false'
+    [toggleContinueSelect]="'shift'"
+    [ratio]='0'
+    (dragStart)="onDragStart($event)"
+    (select)="onSelect($event)"
+    (selectEnd)="onSelectEnd($event)"
+  ></ngx-selecto>
+    <ngx-moveable
+    #moveable
+    [target]="target"
+    [draggable]="true" 
+    [throttleDrag]="0" 
+    [edge]="true"
+    [origin]="false"
+    (dragEnd)="onDragEnd($event)"
+    [keepRatio]="true"
+    
+    (dragStart)="onMoveableDragStart($event)"
+    (drag)="onDrag($event)"
+    
+    (resizeStart)="onResizeStart($event)"
+    (resize)="onResize($event)"
+    (resizeEnd)="onResizeEnd($event)"
+    [resizable]="true"
+    [throttleResize]="0"
+  >
+</ngx-moveable>
+
+    </div>
+
+  </mat-sidenav-content>
+  
+  <mat-sidenav mode="side" position="end" #sidenav2 opened>
+    <mat-nav-list>
+      <mat-form-field mat-list-item appearance="outline"> 
+        <mat-label>Process Name</mat-label>
+        <input matInput [(ngModel)]="selectedProcess.Name">
+      </mat-form-field>
+      <mat-form-field mat-list-item appearance="outline"> 
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="selectedElement.Name">
+      </mat-form-field>
+      <mat-form-field mat-list-item appearance="outline"> 
+        <mat-label>Value</mat-label>
+        <input matInput [(ngModel)]="selectedElement.Value">
+      </mat-form-field>
+      <mat-form-field mat-list-item appearance="outline"> 
+        <mat-label>Width</mat-label>
+        <input matInput [(ngModel)]="selectedElement.Width">
+      </mat-form-field>
+      <mat-form-field mat-list-item appearance="outline"> 
+        <mat-label>Height</mat-label>
+        <input matInput [(ngModel)]="selectedElement.Height">
+      </mat-form-field>
+      <mat-form-field mat-list-item appearance="outline"> 
+        <mat-label>X Coordinate</mat-label>
+        <input matInput [(ngModel)]="selectedElement.X">
+      </mat-form-field>
+      <mat-form-field mat-list-item appearance="outline"> 
+        <mat-label>Y Coordinate</mat-label>
+        <input matInput [(ngModel)]="selectedElement.Y">
+      </mat-form-field>
+      <button mat-raised-button color="primary" *ngIf = "showSave" (click)="saveProcess()">Save Process</button>
+      <button mat-raised-button color="primary" *ngIf = "!showSave" (click)="updateProcess()">Update Process</button>
+    </mat-nav-list>
+  </mat-sidenav>
+</mat-sidenav-container>
+
+
